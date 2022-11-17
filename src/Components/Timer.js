@@ -13,23 +13,18 @@ function Timer() {
     const dispatch = useDispatch()
     dispatch(splitAction(JSON.parse(localStorage.getItem('time'))))
 
-    // OnLoad of page remove all the tasks
-    useEffect(()=>{
-        localStorage.removeItem('time')
-    },[])
-
     useEffect(()=>{
     let interval = null;
 
     // Condition for minutes
-    if(seconds === 59){
+    if(seconds === 60){
         setMinutes(minutes + 1)
         setSeconds(0)
     }
 
         if(isRunning){
             interval = setInterval(()=>{
-                setSeconds(seconds + 1)
+                setSeconds(prvValue => prvValue + 1)
             },1000)
         }else{
             clearInterval(interval)
@@ -42,12 +37,15 @@ function Timer() {
     // Functions
 
     // Splitting time
-    const splitHandler = ()=>{
-        // List of data
-        // @save -- localStorage
+    const startHandler = ()=>{
+        setIsRunning(prevValue => !prevValue)
+    }
 
+    const splitHandler = ()=>{
+        // List of data @save -- localStorage
         const timeArray = JSON.parse(localStorage.getItem('time') || "[]")
 
+        // Object data for splitting
         const timings = {
             minutes,
             seconds
@@ -68,18 +66,25 @@ function Timer() {
   return (
     <>
     <div className='timer'>
-        <h1 className='stopwatch-time'>{minutes<9 ? "0" + minutes: minutes}<span className='stopwatch-text'>Minutes</span>:</h1>
-        <h1 className='stopwatch-time'>{seconds<9 ? "0" + seconds: seconds} <span className='stopwatch-text'>Seconds</span></h1>
+        {/* Minutes Ticking */}
+        <h1 className='stopwatch-time'>{minutes<=9 ? "0" + minutes: minutes}
+        <span className='stopwatch-text'>{minutes<=1 ? "Minute" : "Minutes"}</span>
+        :</h1>
+
+        {/* Seconds Tiking */}
+        <h1 className='stopwatch-time'>{seconds<=9 ? "0" + seconds: seconds}
+        <span className='stopwatch-text'>{seconds <=1 ? "Second" : "Seconds"}</span></h1>
     </div>
 
     {/* Buttons */}
-    <button className='stopwatch-buttons' onClick={()=> setIsRunning(!isRunning)}>{isRunning ? "Pause" : "Start"}</button>
+    <button className='stopwatch-buttons' onClick={startHandler}>{isRunning ? "Pause" : "Start"}</button>
     <br/>
     <button className='stopwatch-buttons' onClick={splitHandler}>Split</button>
     <br/>
     <button className='stopwatch-buttons' onClick={resetHandler}>Reset</button>
+
     </>
   )
 }
 
-export default Timer
+export default React.memo(Timer)
