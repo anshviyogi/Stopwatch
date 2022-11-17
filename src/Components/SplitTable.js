@@ -4,10 +4,14 @@ import { useSelector } from 'react-redux'
 import { ExportCSV } from './ExportCSV'
 
 function SplitTable() {
+  // Getting the data from redux store
     const data = useSelector(data => data)
+
+    // No data found in Local Storage
     if(data.data === null){
       return
     }
+
   return (
     <div>
       <Container>
@@ -42,4 +46,4 @@ function SplitTable() {
   )
 }
 
-export default SplitTable
+export default React.memo(SplitTable)
